@@ -2041,6 +2041,10 @@ def _inquire(file_name: str) -> bool:
 *** C
 
    #+begin_src c :tangle prefix_front.h :exports none
+trexio_exit_code trexio_rm(const char* path, back_end_t back_end);
+//trexio_exit_code trexio_cp(const char* path, back_end_t back_end);
+
+
 /* Portable file and directory operations */
 trexio_exit_code trexio_remove_file(const char* path);
 trexio_exit_code trexio_remove_directory_recursive(const char* path);
@@ -2049,6 +2053,23 @@ trexio_exit_code trexio_copy_directory_recursive(const char* source, const char*
    #+end_src
 
    #+begin_src c :tangle prefix_front.c
+trexio_exit_code
+trexio_rm(const char* path, back_end_t back_end)
+{
+  switch (back_end) {
+  case TREXIO_TEXT:
+    return trexio_remove_directory_recursive(path);
+  case TREXIO_HDF5:
+    return trexio_remove_file(path);
+  case TREXIO_AUTO:
+    trexio_exit_code rc = TREXIO_SUCCESS;
+    rc = trexio_remove_file(path);
+    if (rc == TREXIO_SUCCESS) return rc;
+    return trexio_remove_directory_recursive(path);
+  default:
+    return TREXIO_BACK_END_MISSING;
+  }
+}
 
 /* Portable file removal */
 trexio_exit_code
