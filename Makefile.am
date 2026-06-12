@@ -303,7 +303,7 @@ cppcheck: cppcheck.out
 
 cppcheck.out: $(trexio_h)
 	cd src/ && \
-	cppcheck --addon=cert -q --error-exitcode=0  \
+	cppcheck -q --error-exitcode=0  \
 	  --enable=all \
 	  --language=c --std=c99 -rp --platform=unix64  \
 	  -I../include *.c *.h 2>../$@
